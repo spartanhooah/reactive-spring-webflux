@@ -188,4 +188,54 @@ class FluxAndMonoGeneratorServiceTest extends Specification {
             .expectNext("A", "B")
             .verifyComplete()
     }
+
+    def "exploreMergeSequential"() {
+        when:
+        def result = testSubject.exploreMergeSequential()
+
+        then:
+        StepVerifier.create(result)
+            .expectNext("A", "B", "C", "D", "E", "F")
+            .verifyComplete()
+    }
+
+    def "exploreZip"() {
+        when:
+        def result = testSubject.exploreZip()
+
+        then:
+        StepVerifier.create(result)
+            .expectNext("AD", "BE", "CF")
+            .verifyComplete()
+    }
+
+    def "exploreZipMany"() {
+        when:
+        def result = testSubject.exploreZipMany()
+
+        then:
+        StepVerifier.create(result)
+            .expectNext("AD14", "BE25", "CF36")
+            .verifyComplete()
+    }
+
+    def "exploreZipWith"() {
+        when:
+        def result = testSubject.exploreZipWith()
+
+        then:
+        StepVerifier.create(result)
+            .expectNext("AD", "BE", "CF")
+            .verifyComplete()
+    }
+
+    def "exploreZipWithMono"() {
+        when:
+        def result = testSubject.exploreZipWithMono()
+
+        then:
+        StepVerifier.create(result)
+            .expectNext("AB")
+            .verifyComplete()
+    }
 }
