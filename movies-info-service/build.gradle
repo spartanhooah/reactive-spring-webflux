@@ -23,9 +23,17 @@ dependencies {
 	testImplementation "io.projectreactor:reactor-test"
 	testImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
 	testImplementation "org.spockframework:spock-core"
+	testImplementation "org.spockframework:spock-spring"
 }
 
 test {
 	useJUnitPlatform()
 }
- task prepareKotlinBuildScriptModel{}
+
+sourceSets {
+	test {
+		groovy.srcDirs = ["src/test/groovy", "src/integration"]
+	}
+}
+
+task prepareKotlinBuildScriptModel{}
