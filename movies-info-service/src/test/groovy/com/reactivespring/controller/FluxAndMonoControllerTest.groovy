@@ -14,44 +14,77 @@ class FluxAndMonoControllerTest extends Specification {
     def "a basic test against the flux endpoint"() {
         expect:
         client.get()
-            .uri("/flux")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBodyList(Integer)
-            .hasSize(3)
+                .uri("/flux")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(Integer)
+                .hasSize(3)
     }
 
     def "test the flux endpoint and check the body"() {
         when:
         def result = client.get()
-            .uri("/flux")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .returnResult(Integer)
-            .getResponseBody()
+                .uri("/flux")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .returnResult(Integer)
+                .getResponseBody()
 
         then:
         StepVerifier.create(result)
-            .expectNext(1, 2, 3)
-            .verifyComplete()
+                .expectNext(1, 2, 3)
+                .verifyComplete()
     }
 
-    def "another way to check the body content"() {
+    def "using consumeWith to check the body content for flux"() {
         expect:
         client.get()
-            .uri("/flux")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBodyList(Integer)
-            .consumeWith {
-                def body = it.getResponseBody()
+                .uri("/flux")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(Integer)
+                .consumeWith {
+                    def body = it.getResponseBody()
 
-                // Assertions are needed here, not sure why exactly
-                assert body.size() == 3
-                assert body[0] == 1
-            }
+                    // Assertions are needed here, not sure why exactly
+                    assert body.size() == 3
+                    assert body[0] == 1
+                }
+    }
+
+    def "using consumeWith to check the body content for mono"() {
+        expect:
+        client.get()
+                .uri("/mono")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(String)
+                .consumeWith {
+                    def body = it.getResponseBody()
+
+                    // Assertions are needed here, not sure why exactly
+                    assert body == "Hello, world!"
+                }
+    }
+
+    def "test the streaming endpoint"() {
+        when:
+        def result = client.get()
+                .uri("/stream")
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .returnResult(Long)
+                .getResponseBody()
+
+        then:
+        StepVerifier.create(result)
+            .expectNext(0L, 1L, 2L, 3L)
+            .thenCancel()
+            .verify()
     }
 }

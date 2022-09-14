@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    active: local
+  mongodb:
+    embedded:
+      version: 3.4.7
