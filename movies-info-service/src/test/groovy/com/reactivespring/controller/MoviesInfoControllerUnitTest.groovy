@@ -117,6 +117,9 @@ class MoviesInfoControllerUnitTest extends TestSetup {
     }
 
     def "Delete a movie"() {
+        given:
+        moviesService.deleteMovieInfo("abc") >> Mono.empty()
+
         expect:
         client
             .delete()

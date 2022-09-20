@@ -66,7 +66,7 @@ class FluxAndMonoControllerTest extends Specification {
                 .consumeWith {
                     def body = it.getResponseBody()
 
-                    // Assertions are needed here, not sure why exactly
+                    // Assert keyword is needed here, not sure why exactly
                     assert body == "Hello, world!"
                 }
     }
