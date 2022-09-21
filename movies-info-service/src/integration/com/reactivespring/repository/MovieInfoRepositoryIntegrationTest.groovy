@@ -13,7 +13,7 @@ class MovieInfoRepositoryIntegrationTest extends TestSetup {
     MovieInfoRepository movieInfoRepository
 
     def setup() {
-       movieInfoRepository.saveAll(generateMovies()).blockLast()
+        movieInfoRepository.saveAll(generateMovies()).blockLast()
     }
 
     def cleanup() {
@@ -93,6 +93,19 @@ class MovieInfoRepositoryIntegrationTest extends TestSetup {
         StepVerifier.create(result)
             .assertNext {
                 assert it.name == "Batman Begins"
+            }
+            .verifyComplete()
+    }
+
+    def "Find a movie by name"() {
+        when:
+        def result = movieInfoRepository.findByName("Batman Begins")
+
+        then:
+        StepVerifier.create(result)
+            .assertNext {
+                assert it.name == "Batman Begins"
+                assert it.year == 2005
             }
             .verifyComplete()
     }
