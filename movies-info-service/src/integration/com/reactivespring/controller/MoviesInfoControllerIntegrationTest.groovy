@@ -4,14 +4,14 @@ import com.reactivespring.TestSetup
 import com.reactivespring.domain.MovieInfo
 import com.reactivespring.repository.MovieInfoRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.util.UriComponentsBuilder
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest//(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@AutoConfigureWebTestClient
+//@AutoConfigureWebTestClient
 class MoviesInfoControllerIntegrationTest extends TestSetup {
     static final def PATH = "/v1/movieinfos"
 
@@ -70,6 +70,34 @@ class MoviesInfoControllerIntegrationTest extends TestSetup {
             }
     }
 
+    def "Get a movie that doesn't exist"() {
+        expect:
+        client
+                .get()
+                .uri("$PATH/def")
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+    }
+
+    def "Get all movies from a year"() {
+        given:
+        def param = UriComponentsBuilder.fromUriString(PATH)
+                .queryParam("year", 2005)
+                .buildAndExpand()
+                .toUri()
+
+        expect:
+        client
+                .get()
+                .uri(param)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBodyList(MovieInfo)
+                .hasSize(1)
+    }
+
     def "Update a movie"() {
         expect:
         client
@@ -94,5 +122,16 @@ class MoviesInfoControllerIntegrationTest extends TestSetup {
             .exchange()
             .expectStatus()
             .isNoContent()
+    }
+
+    def "Attempt to update a movie that's not found"() {
+        expect:
+        client
+                .put()
+                .uri("$PATH/def")
+                .bodyValue(SERENITY)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
     }
 }

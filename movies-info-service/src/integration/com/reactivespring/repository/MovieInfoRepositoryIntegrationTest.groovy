@@ -66,7 +66,8 @@ class MovieInfoRepositoryIntegrationTest extends TestSetup {
         then:
         StepVerifier.create(result)
             .assertNext {
-                it.year == 2021
+                // Need assert keyword here
+                assert it.year == 2021
             }
             .verifyComplete()
     }
@@ -81,6 +82,18 @@ class MovieInfoRepositoryIntegrationTest extends TestSetup {
         then:
         StepVerifier.create(result)
             .expectNextCount(2)
+            .verifyComplete()
+    }
+
+    def "Get all movies from a given year"() {
+        when:
+        def result = movieInfoRepository.findByYear(2005).log()
+
+        then:
+        StepVerifier.create(result)
+            .assertNext {
+                assert it.name == "Batman Begins"
+            }
             .verifyComplete()
     }
 }
