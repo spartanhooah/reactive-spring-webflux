@@ -1,11 +1,7 @@
 package com.reactivespring.exception;
 
-public class MoviesInfoServerException extends RuntimeException{
-    private String message;
+import lombok.experimental.StandardException;
 
-
-    public MoviesInfoServerException(String message) {
-        super(message);
-        this.message = message;
-    }
+@StandardException
+public class MoviesInfoServerException extends RuntimeException {
 }

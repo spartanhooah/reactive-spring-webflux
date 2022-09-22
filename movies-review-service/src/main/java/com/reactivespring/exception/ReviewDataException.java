@@ -1,10 +1,7 @@
 package com.reactivespring.exception;
 
-public class ReviewDataException extends RuntimeException {
-    private String message;
+import lombok.experimental.StandardException;
 
-    public ReviewDataException(String s) {
-        super(s);
-        this.message = s;
-    }
+@StandardException
+public class ReviewDataException extends RuntimeException {
 }

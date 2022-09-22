@@ -1,10 +1,7 @@
 package com.reactivespring.exception;
 
-public class ReviewsClientException extends RuntimeException{
-    private String message;
+import lombok.experimental.StandardException;
 
-    public ReviewsClientException(String message) {
-        super(message);
-        this.message = message;
-    }
+@StandardException
+public class ReviewsClientException extends RuntimeException{
 }
