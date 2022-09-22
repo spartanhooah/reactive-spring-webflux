@@ -1,0 +1,6 @@
+server:
+  port: 8081
+spring:
+  mongodb:
+    embedded:
+      version: 3.4.7

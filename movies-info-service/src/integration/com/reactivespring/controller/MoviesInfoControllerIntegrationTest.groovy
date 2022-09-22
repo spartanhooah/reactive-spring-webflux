@@ -4,14 +4,15 @@ import com.reactivespring.TestSetup
 import com.reactivespring.domain.MovieInfo
 import com.reactivespring.repository.MovieInfoRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.util.UriComponentsBuilder
 
-@SpringBootTest//(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @ActiveProfiles("test")
-//@AutoConfigureWebTestClient
+@AutoConfigureWebTestClient
 class MoviesInfoControllerIntegrationTest extends TestSetup {
     static final def PATH = "/v1/movieinfos"
 
