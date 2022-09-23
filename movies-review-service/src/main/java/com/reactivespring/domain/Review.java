@@ -1,5 +1,7 @@
 package com.reactivespring.domain;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +15,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Review {
     @Id private String reviewId;
 
+    @NotNull(message = "movieInfoId is required")
     private Long movieInfoId;
+
     private String comment;
-    // @Min(value = 0L, message = "rating.negative : please pass a non-negative value")
+
+    @Min(value = 0L, message = "please provide a non-negative rating")
     private Double rating;
 }

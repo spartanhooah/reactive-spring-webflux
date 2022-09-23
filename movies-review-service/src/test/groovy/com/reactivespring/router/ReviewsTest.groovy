@@ -1,6 +1,7 @@
 package com.reactivespring.router
 
 import com.reactivespring.domain.Review
+import com.reactivespring.exception.GlobalErrorHandler
 import com.reactivespring.handler.ReviewHandler
 import com.reactivespring.repository.ReviewReactiveRepository
 import org.spockframework.spring.SpringBean
@@ -13,7 +14,7 @@ import reactor.core.publisher.Mono
 import spock.lang.Specification
 
 @WebFluxTest
-@ContextConfiguration(classes = [ReviewRouter, ReviewHandler])
+@ContextConfiguration(classes = [ReviewRouter, ReviewHandler, GlobalErrorHandler])
 @AutoConfigureWebTestClient
 class ReviewsTest extends Specification {
     static final def PATH = "/v1/reviews"
@@ -41,5 +42,21 @@ class ReviewsTest extends Specification {
             .consumeWith {
                 assert it.responseBody.reviewId == "abc"
             }
+    }
+
+    def "Fail bean validation"() {
+        given:
+        def review = new Review(null, null, "Awesome Movie", -1)
+
+        expect:
+        client
+            .post()
+            .uri(PATH)
+            .bodyValue(review)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(String)
+            .isEqualTo("movieInfoId is required, please provide a non-negative rating")
     }
 }

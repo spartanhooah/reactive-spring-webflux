@@ -21,7 +21,7 @@ public class GlobalErrorHandler {
             .stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .sorted()
-            .collect(Collectors.joining(","));
+            .collect(Collectors.joining("; "));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
