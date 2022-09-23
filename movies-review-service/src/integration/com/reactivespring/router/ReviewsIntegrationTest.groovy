@@ -2,30 +2,26 @@ package com.reactivespring.router
 
 import com.reactivespring.domain.Review
 import com.reactivespring.repository.ReviewReactiveRepository
-import org.spockframework.spring.EnableSharedInjection
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
-import spock.lang.Shared
 import spock.lang.Specification
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@EnableSharedInjection
 class ReviewsIntegrationTest extends Specification {
     static final def PATH = "/v1/reviews"
 
     @Autowired
     WebTestClient client
 
-    @Shared
     @Autowired
     ReviewReactiveRepository reviewRepository
 
-    def setupSpec() {
+    def setup() {
         def reviews = [
             new Review(null, 1L, "Awesome Movie", 9.0),
             new Review(null, 1L, "Awesome Movie1", 9.0),
@@ -35,7 +31,7 @@ class ReviewsIntegrationTest extends Specification {
         reviewRepository.saveAll(reviews).blockLast()
     }
 
-    def cleanupSpec() {
+    def cleanup() {
         reviewRepository.deleteAll().block()
     }
 
@@ -54,6 +50,62 @@ class ReviewsIntegrationTest extends Specification {
             .expectBody(Review)
             .consumeWith {
                 assert it.responseBody.reviewId
+            }
+    }
+
+    def "Get all reviews"() {
+        expect:
+        client
+            .get()
+            .uri(PATH)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBodyList(Review)
+            .consumeWith {
+                assert it.responseBody.size() >= 3
+            }
+    }
+
+    def "Update a review"() {
+        given:
+        def updatedReview = new Review(null, 2L, "Meh", 5)
+
+        expect:
+        client
+            .put()
+            .uri("$PATH/1")
+            .bodyValue(updatedReview)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(Review)
+            .consumeWith {
+                assert it.responseBody.movieInfoId
+            }
+    }
+
+    def "Delete a review"() {
+        expect:
+        client
+            .delete()
+            .uri("$PATH/1")
+            .exchange()
+            .expectStatus()
+            .isNoContent()
+    }
+
+    def "Get all reviews for a particular movie"() {
+        expect:
+        client
+            .get()
+            .uri("$PATH?movieInfoId=1")
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBodyList(Review)
+            .consumeWith {
+                assert it.responseBody.size() >= 2
             }
     }
 }
