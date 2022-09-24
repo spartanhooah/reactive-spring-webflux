@@ -20,10 +20,16 @@ dependencies {
 	testImplementation "org.springframework.boot:spring-boot-starter-test"
 	testImplementation "io.projectreactor:reactor-test"
 
-	testImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
+	testImplementation platform("org.spockframework:spock-bom:2.2-groovy-4.0")
 	testImplementation "org.spockframework:spock-core"
 }
 
 test {
 	useJUnitPlatform()
+}
+
+sourceSets {
+	test {
+		groovy.srcDirs = ["src/test/groovy", "src/integration"]
+	}
 }

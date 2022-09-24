@@ -14,13 +14,16 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class GlobalErrorHandler implements ErrorWebExceptionHandler {
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-        log.error("Exception message is " + ex.getMessage(), ex);
         var dataBufferFactory = exchange.getResponse().bufferFactory();
 
         var errorMessage = dataBufferFactory.wrap(ex.getMessage().getBytes(UTF_8));
 
         if (ex instanceof ReviewDataException) {
             exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
+
+            return exchange.getResponse().writeWith(Mono.just(errorMessage));
+        } else if (ex instanceof ReviewNotFoundException) {
+            exchange.getResponse().setStatusCode(HttpStatus.NOT_FOUND);
 
             return exchange.getResponse().writeWith(Mono.just(errorMessage));
         }
