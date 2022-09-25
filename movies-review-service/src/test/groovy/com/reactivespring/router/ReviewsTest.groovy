@@ -57,6 +57,6 @@ class ReviewsTest extends Specification {
             .expectStatus()
             .isBadRequest()
             .expectBody(String)
-            .isEqualTo("movieInfoId is required, please provide a non-negative rating")
+            .isEqualTo("movieInfoId is required; please provide a non-negative rating")
     }
 }

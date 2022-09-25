@@ -1,13 +1,13 @@
 package com.reactivespring.exception;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j
 @Component
