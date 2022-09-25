@@ -1,8 +1,9 @@
 plugins {
+	id "groovy"
 	id "org.springframework.boot" version "2.7.2"
 	id "io.spring.dependency-management" version "1.0.13.RELEASE"
 	id "io.freefair.lombok" version "6.5.1"
-	id "groovy"
+	id "com.diffplug.spotless" version "6.11.0"
 }
 
 group = "com.reactivespring"
@@ -31,5 +32,11 @@ test {
 sourceSets {
 	test {
 		groovy.srcDirs = ["src/test/groovy", "src/integration"]
+	}
+}
+
+spotless {
+	java {
+		googleJavaFormat().aosp()
 	}
 }
