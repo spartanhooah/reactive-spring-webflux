@@ -17,10 +17,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@AutoConfigureWireMock(port = 8084)
+@AutoConfigureWireMock(port = 8090)
 @TestPropertySource(properties = [
-    "restClient.moviesInfoUrl=http://localhost:8084/v1/movieinfos",
-    "restClient.reviewsUrl=http://localhost:8084/v1/reviews"
+    "restClient.moviesInfoUrl=http://localhost:8090/v1/movieinfos",
+    "restClient.reviewsUrl=http://localhost:8090/v1/reviews"
 ])
 class MoviesControllerIntegrationTest extends Specification {
     @Autowired
