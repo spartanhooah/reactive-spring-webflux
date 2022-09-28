@@ -23,9 +23,9 @@ class ReviewsIntegrationTest extends Specification {
 
     def setup() {
         def reviews = [
-            new Review(null, 1L, "Awesome Movie", 9.0),
-            new Review(null, 1L, "Awesome Movie1", 9.0),
-            new Review(null, 2L, "Excellent Movie", 8.0)
+            new Review("1", 1L, "Awesome Movie", 9.0),
+            new Review("2", 1L, "Awesome Movie1", 9.0),
+            new Review("3", 2L, "Excellent Movie", 8.0)
         ]
 
         reviewRepository.saveAll(reviews).blockLast()
@@ -69,7 +69,7 @@ class ReviewsIntegrationTest extends Specification {
 
     def "Update a review"() {
         given:
-        def updatedReview = new Review(null, 2L, "Meh", 5)
+        def updatedReview = new Review("1", 2L, "Meh", 5)
 
         expect:
         client

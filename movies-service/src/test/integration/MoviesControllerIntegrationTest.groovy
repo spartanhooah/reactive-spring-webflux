@@ -9,10 +9,10 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import spock.lang.Specification
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import static com.github.tomakehurst.wiremock.client.WireMock.get
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import static com.github.tomakehurst.wiremock.client.WireMock.get
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -41,7 +41,8 @@ class MoviesControllerIntegrationTest extends Specification {
 
         expect:
         client
-            .get("/v1/movies/$movieId")
+            .get()
+            .uri("/v1/movies/$movieId")
             .exchange()
             .expectStatus()
             .isOk()
