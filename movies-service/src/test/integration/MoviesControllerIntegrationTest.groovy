@@ -8,19 +8,15 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import spock.lang.Specification
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
-import static com.github.tomakehurst.wiremock.client.WireMock.get
+import static com.github.tomakehurst.wiremock.client.WireMock.*
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@AutoConfigureWireMock(port = 8090)
+@AutoConfigureWireMock(port = 8084)
 @TestPropertySource(properties = [
-    "restClient.moviesInfoUrl=http://localhost:8090/v1/movieinfos",
-    "restClient.reviewsUrl=http://localhost:8090/v1/reviews"
+    "restClient.moviesInfoUrl=http://localhost:8084/v1/movieinfos",
+    "restClient.reviewsUrl=http://localhost:8084/v1/reviews",
 ])
 class MoviesControllerIntegrationTest extends Specification {
     @Autowired
