@@ -1,3 +1,5 @@
+package com.reactivespring.controller
+
 import com.reactivespring.domain.Movie
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -8,9 +10,12 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import spock.lang.Specification
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import static com.github.tomakehurst.wiremock.client.WireMock.get
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 8084)
@@ -30,7 +35,7 @@ class MoviesControllerIntegrationTest extends Specification {
                 .withHeader("Content-Type", "application/json")
                 .withBodyFile("movieinfo.json")))
 
-        stubFor(get(urlPathEqualTo("/v1/reviews/?movieInfoId=$movieId"))
+        stubFor(get(urlEqualTo("/v1/reviews?movieInfoId=$movieId"))
             .willReturn(aResponse()
                 .withHeader("Content-Type", "application/json")
                 .withBodyFile("reviews.json")))
