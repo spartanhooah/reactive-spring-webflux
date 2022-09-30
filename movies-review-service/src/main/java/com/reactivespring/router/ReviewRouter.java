@@ -19,7 +19,8 @@ public class ReviewRouter {
                                 builder.POST(reviewHandler::addReview)
                                         .GET(reviewHandler::getReviews)
                                         .PUT("/{id}", reviewHandler::updateReview)
-                                        .DELETE("/{id}", reviewHandler::deleteReview))
+                                        .DELETE("/{id}", reviewHandler::deleteReview)
+                                        .GET("/stream", reviewHandler::getReviewsStream))
                 .GET("/v1/hello-world", (request -> ServerResponse.ok().bodyValue("Hello, world!")))
                 // the POST and GET for /v1/reviews could be here as well in separate lines
                 .build();

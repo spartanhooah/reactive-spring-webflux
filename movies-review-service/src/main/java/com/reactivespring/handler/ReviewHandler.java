@@ -1,22 +1,25 @@
 package com.reactivespring.handler;
 
-import static java.lang.Long.parseLong;
-
 import com.reactivespring.domain.Review;
 import com.reactivespring.exception.ReviewDataException;
 import com.reactivespring.exception.ReviewNotFoundException;
 import com.reactivespring.repository.ReviewReactiveRepository;
-import java.util.stream.Collectors;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.stream.Collectors;
+
+import static java.lang.Long.parseLong;
 
 @Slf4j
 @Component
@@ -25,10 +28,13 @@ public class ReviewHandler {
     private final Validator validator;
     private final ReviewReactiveRepository reviewRepository;
 
+    private Sinks.Many<Review> reviewsSink = Sinks.many().replay().latest();
+
     public Mono<ServerResponse> addReview(ServerRequest request) {
         return request.bodyToMono(Review.class)
                 .doOnNext(this::validate)
                 .flatMap(reviewRepository::save)
+                .doOnNext(review -> reviewsSink.tryEmitNext(review))
                 .flatMap(ServerResponse.status(HttpStatus.CREATED)::bodyValue);
     }
 
@@ -89,5 +95,12 @@ public class ReviewHandler {
 
     private Mono<ServerResponse> buildResponse(Flux<Review> reviews) {
         return ServerResponse.ok().body(reviews, Review.class);
+    }
+
+    public Mono<ServerResponse> getReviewsStream(ServerRequest request) {
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_NDJSON)
+                .body(reviewsSink.asFlux(), Review.class)
+                .log();
     }
 }
