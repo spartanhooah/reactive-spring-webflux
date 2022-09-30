@@ -3,6 +3,7 @@ package com.reactivespring.client;
 import com.reactivespring.domain.Review;
 import com.reactivespring.exception.ReviewsClientException;
 import com.reactivespring.exception.ReviewsServerException;
+import com.reactivespring.util.RetryUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,7 @@ public class ReviewsClient {
                                                                 new ReviewsServerException(
                                                                         responseMessage))))
                 .bodyToFlux(Review.class)
+                .retryWhen(RetryUtil.retrySpec())
                 .log();
     }
 }

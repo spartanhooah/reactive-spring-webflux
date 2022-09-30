@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.util.UriComponentsBuilder
+import reactor.test.StepVerifier
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -74,29 +75,29 @@ class MoviesInfoControllerIntegrationTest extends TestSetup {
     def "Get a movie that doesn't exist"() {
         expect:
         client
-                .get()
-                .uri("$PATH/def")
-                .exchange()
-                .expectStatus()
-                .isNotFound()
+            .get()
+            .uri("$PATH/def")
+            .exchange()
+            .expectStatus()
+            .isNotFound()
     }
 
     def "Get all movies from a year"() {
         given:
         def param = UriComponentsBuilder.fromUriString(PATH)
-                .queryParam("year", 2005)
-                .buildAndExpand()
-                .toUri()
+            .queryParam("year", 2005)
+            .buildAndExpand()
+            .toUri()
 
         expect:
         client
-                .get()
-                .uri(param)
-                .exchange()
-                .expectStatus()
-                .is2xxSuccessful()
-                .expectBodyList(MovieInfo)
-                .hasSize(1)
+            .get()
+            .uri(param)
+            .exchange()
+            .expectStatus()
+            .is2xxSuccessful()
+            .expectBodyList(MovieInfo)
+            .hasSize(1)
     }
 
     def "Update a movie"() {
@@ -128,11 +129,45 @@ class MoviesInfoControllerIntegrationTest extends TestSetup {
     def "Attempt to update a movie that's not found"() {
         expect:
         client
-                .put()
-                .uri("$PATH/def")
-                .bodyValue(SERENITY)
-                .exchange()
-                .expectStatus()
-                .isNotFound()
+            .put()
+            .uri("$PATH/def")
+            .bodyValue(SERENITY)
+            .exchange()
+            .expectStatus()
+            .isNotFound()
     }
+
+    def "Test streaming endpoint"() {
+        given:
+        client
+            .post()
+            .uri(PATH)
+            .bodyValue(SERENITY)
+            .exchange()
+            .expectStatus()
+            .isCreated()
+            .expectBody(MovieInfo)
+            .consumeWith {
+                assert it.responseBody.movieInfoId
+            }
+
+        when:
+        def stream = client
+            .get()
+            .uri("$PATH/stream")
+            .exchange()
+            .expectStatus()
+            .is2xxSuccessful()
+            .returnResult(MovieInfo)
+            .getResponseBody()
+
+        then:
+        StepVerifier.create(stream)
+            .assertNext {
+                assert it.movieInfoId
+            }
+            .thenCancel()
+            .verify()
+    }
+
 }

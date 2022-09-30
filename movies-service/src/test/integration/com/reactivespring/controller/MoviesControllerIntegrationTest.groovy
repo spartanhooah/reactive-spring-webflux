@@ -29,6 +29,10 @@ class MoviesControllerIntegrationTest extends Specification {
     @Autowired
     WebTestClient client
 
+    def setup() {
+        WireMock.reset()
+    }
+
     def "Get movie by ID"() {
         given:
         def movieId = "abc"
@@ -121,7 +125,7 @@ class MoviesControllerIntegrationTest extends Specification {
             .isEqualTo("MovieInfo Service Unavailable")
     }
 
-    def "Validate retries"() {
+    def "Validate retries for movie info endpoint"() {
         given:
         def movieId = "abc"
         stubFor(get(urlEqualTo("/v1/movieinfos/$movieId"))
@@ -140,5 +144,32 @@ class MoviesControllerIntegrationTest extends Specification {
             .isEqualTo("MovieInfo Service Unavailable")
 
         WireMock.verify(4, getRequestedFor(urlEqualTo("/v1/movieinfos/$movieId")))
+    }
+
+    def "Validate retries for reviews endpoint"() {
+        given:
+        def movieId = "abc"
+        stubFor(get(urlEqualTo("/v1/movieinfos/$movieId"))
+            .willReturn(aResponse()
+                .withHeader("Content-Type", "application/json")
+                .withBodyFile("movieinfo.json")))
+
+        stubFor(get(urlEqualTo("/v1/reviews?movieInfoId=$movieId"))
+            .willReturn(aResponse()
+                .withStatus(500)
+                .withBody("Review Service Not Available")))
+
+
+        expect:
+        client
+            .get()
+            .uri("/v1/movies/$movieId")
+            .exchange()
+            .expectStatus()
+            .is5xxServerError()
+            .expectBody(String)
+            .isEqualTo("Review Service Not Available")
+
+        WireMock.verify(4, getRequestedFor(urlEqualTo("/v1/reviews?movieInfoId=$movieId")))
     }
 }
